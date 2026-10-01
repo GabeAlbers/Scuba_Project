@@ -41,6 +41,9 @@ class submarine
             current_oxygen = max_oxygen;
         }
 
+        //tis will check player movment aginst map collisions on map
+        void player_input()
+
 };
 
 
@@ -74,6 +77,11 @@ class game_map
             {
                 cout << grid[y] << endl;
             }
+        }
+
+        char get_tile(int x, int y)
+        {
+            return grid[y][x];
         }
 
 
@@ -271,6 +279,22 @@ class game_map
 
             //add 10 treasure '?' places
             add_treasures(10);
+        }
+
+        bool is_valid_move(int target_x, int target_y)
+        {
+
+            //check boundries
+            if (target_x < 0 || target_x >= width || target_y < 0 || target_y >= height)
+            {
+                return false;
+            } else if (grid[target_y][target_x] == '#') //check walls or seafloors
+            {
+                return false 
+            }
+
+            //otherwise its true
+            return true;
         }
 
 };
