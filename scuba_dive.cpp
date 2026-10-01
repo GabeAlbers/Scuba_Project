@@ -185,12 +185,12 @@ class game_map
         }
 
         //this will add random treasures that are ' ' and toutching a '#'
-        void add_treasures(int amount)
+        void add_treasures(int amount_of_mystery_blocks)
         {
             //Im going to use these to sore valid 
             //chords and choose them randomly
-            vecotor<int> valid_x;
-            vecotor<int> valid_y;
+            vector<int> valid_x;
+            vector<int> valid_y;
 
             //scan the map
             for (int y = 0; y < height; y++)
@@ -202,7 +202,7 @@ class game_map
                     if (grid[y][x] == ' ')
                     {
                         //set it to flase first
-                        bool toutching_wall = faslse;
+                        bool toutching_wall = false;
 
                         //now check all 4 directions 
                         //up
@@ -214,6 +214,7 @@ class game_map
                         //right 
                         if (x < width - 1 && grid[y][x + 1] == '#') toutching_wall = true;
 
+                        //if the tile turns true record it
                         if (toutching_wall)
                         {
                             valid_x.push_back(x);
@@ -223,6 +224,22 @@ class game_map
 
                 }
 
+            }
+
+            int placed = 0;
+            while (placed < amount_of_mystery_blocks && !valid_x.empty())
+            {
+
+                //pick a random index time from the valid inputs
+                int index = rand() % valid_x.size();
+
+                int place_x = valid_x[index];
+                int place_y = valid_y[index];
+
+                //place treasure
+                grid[place_y][place_x] = '?';
+
+                placed++;
             }
 
         }
@@ -251,6 +268,9 @@ class game_map
             add_random_pillar();
             //adds a cliff at he start
             add_beginning_cliff();
+
+            //add 10 treasure '?' places
+            add_treasures(10);
         }
 
 };
