@@ -25,6 +25,11 @@ class submarine
         int current_oxygen;
         int total_earnings;
 
+        int gold_coins_found = 0;
+        int relics_found = 0;
+        int oxygen_pockets_found = 0;
+        int fish_descovered_count = 0;
+
 
         //this constructor sets the initial position and filles the oxygen to the level it needs to be
         submarine(int start_x, int start_y, int oxygen)
@@ -56,6 +61,7 @@ class game_map
         int width; 
         int height;
         vector<string> grid;
+
 
     public:
 
@@ -320,6 +326,149 @@ class game_map
             return true;
         }
 
+//inbetween the "=" is the logic for all of the treasure interaction stuff. abobe they just spawn in as "?"
+//===================================================================================================================================
+
+        void process_treasure_interaction(char& tile_content, submarine& sub)
+        {
+            if (tile_content == '?')
+            {
+                //roll to see if its a fish (25% chance)
+                int roll = 1 + (rand() % 100);
+                if (roll <= 25 )
+                {
+                    tile_content = '2';
+                    cout << "\nYou find... A FISH! thats a pretty cool looking fish!" << endl;
+                    sub.fish_descovered_count++;
+                }
+                else //75% chance or this
+                {
+                    tile_content = ' ';
+
+                    int loot_type = 1 + (rand() % 3); //3 diffrent loot types
+                    if (loot_type == 1)
+                    {
+                        int reward = 150;
+                        cout << "\nThats a nice gold coin! Gained $" << reward << "!" << endl;
+                        sub.gold_coins_found++;
+                        sub.total_earnings += reward;
+                    } 
+                    else if (loot_type == 2)
+                    {
+                        int reward = 300;
+                        cout << "\n  Ancient Relic!! Nice! Gained $" << reward << endl;
+                        sub.relics_found++;
+                        sub.total_earnings += reward;
+
+                    }else 
+                    {
+                        sub.oxygen_pockets_found++;
+                        sub.current_oxygen = 100;
+                        cout << "\nYou found an air pocket! oxygen had been restored up to 100!" << endl;
+                    }
+                }
+            } 
+            else if (tile_content == '2') //im adding a 1% chance that if you look at the fish again it becomes a gold coin
+            {
+                int roll = 1 + (rand() % 100);
+                if (roll <= 99)
+                {
+                cout << "\nYou look at it again.. umm... its still a fish." << endl;
+                }else 
+                {
+                    int reward = 150;
+                    cout << "\nWhat?! the fish turned into a gold coin! Gained $" << reward << "!" << endl;
+                    sub.gold_coins_found++;
+                    sub.total_earnings += reward;
+                    tile_content = ' ';
+                    
+                }
+            }
+        }
+
+        //inspects and then collects treasure
+        void inspect_menu(submarine& sub)
+        {
+
+            //check all directuons if treasure is nearby
+            bool has_up = (sub.y > 0 && (grid[sub.y - 1][sub.x] == '?' || grid[sub.y - 1][sub.x] == '2'));
+            bool has_down = (sub.y < height - 1 && (grid[sub.y + 1][sub.x] == '?' || grid[sub.y + 1][sub.x] == '2'));
+            bool has_left = (sub.x > 0 && (grid[sub.y][sub.x - 1] == '?' || grid[sub.y][sub.x - 1] == '2'));
+            bool has_right = (sub.x < width - 1 && (grid[sub.y][sub.x + 1] == '?' || grid[sub.y][sub.x + 1] == '2'));
+            int count = 0;
+
+            //count how many there are
+            if (has_up) count++;
+            if (has_down) count++;
+            if (has_left) count++;
+            if (has_right) count++;
+
+            if (count == 0)
+            {
+                cout << "\nNo treasure close enough to inspect." << endl;
+                return;
+            }
+
+            char choice = ' ';
+            bool valid_choice = false;
+
+            while (!valid_choice)
+            {
+                cout << "\n===Inspection Menu==" << endl
+                     << "Avalable Options: ";
+                    if (has_up) cout << "[W: up] ";
+                    if (has_down) cout << "[S: down] ";
+                    if (has_left) cout << "[A: left] ";
+                    if (has_right) cout << "[D: Right] ";
+                    cout << "\nChoose a direction (W/A/S/D) to inspect or enter 'C' to cancel: ";
+
+                //input time
+                cin >> choice;
+
+                if (cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "\nInput stream error! please try again." << endl;
+                    continue;
+                }
+
+                choice = tolower(choice);
+
+                if (choice == 'c')
+                {
+                    cout << "Exiting inspection menu." << endl;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //this clears out anny buffer inputs i think
+                    return;              
+                }
+
+                //using these to set target chords later
+                int target_x = sub.x;
+                int target_y = sub.y;
+
+                if (choice == 'w' && has_up) {target_y--; valid_choice = true;}
+                else if (choice == 's' && has_down) {target_y++; valid_choice = true;}
+                else if (choice == 'a' && has_left) {target_x--; valid_choice = true;}
+                else if (choice == 'd' && has_right) {target_x++; valid_choice = true;}
+                else
+                {
+                    cout << "\n Invalid choice, or no treasure in that direction. Try Again.\n";
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); //again clear out any buffers
+
+                }
+
+                if (valid_choice)
+                {
+                    process_treasure_interaction(grid[target_y][target_x], sub);
+                }
+            }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); //again...
+
+        }
+
+
+
+
 };
 
 //this needs to be declared after the game_map class
@@ -368,12 +517,16 @@ int main ()
              << "==================================================" 
              << endl;
         ocean_map.print_map_with_sub(my_sub);
-        cout << "controls: w a s d, q = quit" << endl;
+        cout << "controls: movment (w/a/s/d) up, left, down, and right | i (inspect) | q = quit" << endl;
         cout << "enter move: "; 
 
         cin >> input;
 
-        if (input != 'q')
+        if (input == 'i')
+        {
+            ocean_map.inspect_menu(my_sub);
+        }
+        else if (input != 'q')
         {
             my_sub.player_input(input, ocean_map);
         }
