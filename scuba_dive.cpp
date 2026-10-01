@@ -187,6 +187,43 @@ class game_map
         //this will add random treasures that are ' ' and toutching a '#'
         void add_treasures(int amount)
         {
+            //Im going to use these to sore valid 
+            //chords and choose them randomly
+            vecotor<int> valid_x;
+            vecotor<int> valid_y;
+
+            //scan the map
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+
+                    //check if is ocean
+                    if (grid[y][x] == ' ')
+                    {
+                        //set it to flase first
+                        bool toutching_wall = faslse;
+
+                        //now check all 4 directions 
+                        //up
+                        if (y > 0 && grid[y -1][x] == '#') toutching_wall = true;
+                        //down
+                        if (y < height - 1 && grid[y + 1][x] == '#') toutching_wall = true;
+                        //left 
+                        if (x > 0 && grid[y][x -1] == '#') toutching_wall = true;
+                        //right 
+                        if (x < width - 1 && grid[y][x + 1] == '#') toutching_wall = true;
+
+                        if (toutching_wall)
+                        {
+                            valid_x.push_back(x);
+                            valid_y.push_back(y);
+                        }
+                    }
+
+                }
+
+            }
 
         }
 
