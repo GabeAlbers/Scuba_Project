@@ -128,7 +128,7 @@ class game_map
             int pillar_height = 5;
 
             //this is used to calculate how far away the pillar has to be from the edge of the level
-            int pillar_buffer_left = 3;
+            int pillar_buffer_left = 7;
             int pillar_buffer_right = 3;
             //picks a random x chord 
             int pillar_x = pillar_buffer_left + (rand() % (width - (pillar_buffer_left + pillar_buffer_right)));
@@ -146,10 +146,48 @@ class game_map
 
                     if (target_x >= 0 && target_x < width)
                     {
-                        grid[current_y][target_x] = 'V';
+                        grid[current_y][target_x] = '#';
                     }
                 }
             }
+        }
+
+
+        //this will work the same as the pillar random but 
+        // adds a cliff at the start of the level 
+        void add_beginning_cliff()
+        {
+            int pillar_width = 5;
+
+            int cliff_height = 9;
+
+            //i cant figure out the calculation for this right now but because 
+            // its at the start and its width is always 5 its gonna be 3
+            int cliff_x = 3;
+
+            for (int h = 0; h < cliff_height; h++)
+            {
+                //moves upward from the bottom row
+                int current_y = (height - 1) - h;
+
+                //this is 5 wide this time so to -3 and positive 3
+                for (int z = -3; z <= 3; z++)
+                {   
+                    //find target x
+                    int target_x = cliff_x + z;
+
+                    if (target_x >= 0 && target_x < width)
+                    {
+                        grid[current_y][target_x] = '#';
+                    }
+                }
+            }
+        }
+
+        //this will add random treasures that are ' ' and toutching a '#'
+        void add_treasures(int amount)
+        {
+
         }
 
         void setup_level()
@@ -172,8 +210,10 @@ class game_map
 
             //add hills
             add_random_hills();
+            //adds a random pillar 
             add_random_pillar();
-
+            //adds a cliff at he start
+            add_beginning_cliff();
         }
 
 };
