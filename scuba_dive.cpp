@@ -24,7 +24,7 @@ class submarine
 
 
         //this constructor sets the initial position and filles the oxygen to the level it needs to be
-        Submarine(int start_x, int start_y, int oxygen)
+        submarine(int start_x, int start_y, int oxygen)
         {
             x = start_x;
             y = start_y;
@@ -41,7 +41,7 @@ class submarine
             current_oxygen = max_oxygen;
         }
 
-}
+};
 
 
 class game_map
@@ -59,15 +59,96 @@ class game_map
             height = h;
             
             //this will Initialize the grid the vecotor with "open ocean (' ')"
-            level_grid = vector<string>(height, string(width, ' '));
+            grid = vector<string>(height, string(width, ' '));
+
+
+            setup_level();
+
 
         }
 
+        //simple printer for testing
+        void print_map() 
+        {
+            for (int y = 0; y < height; y++)
+            {
+                cout << grid[y] << endl;
+            }
+        }
+
+
+        //this will randomly add small hills to the landscape
         void add_random_hills()
         {
-            for (int i = 0; i < 4; i++)
+
+            srand(time(0));
+
+            //this will set 4 random liitle hill functions around the ocean
+            for (int i = 0; i < 4; i++) 
             {
+                //random center point the +2 and width -4 keeps it from
+                //toutching the edges of the game map
+                int hill_x = 2 + (rand() % (width - 4));
+
+                //random height between 2 and 4 blocks tall
+                int hill_height = 2 + (rand() % 3);
+
+                //build the hill upwards 
+                for (int h = 0; h < hill_height; h++)
+                {
+
+                    //this sets where i "sink" my hill values
+                    int current_y = (height - 1) - h; 
+
+                    //by subtracting h it tapers the base of the hills
+                    int spread = hill_height - h;
+
+                    for (int i_2 = -spread; i_2 <= spread; i_2++)
+                    {
+                        int target_x = hill_x + i_2; 
+
+                        //final check to make sure we are in map borders
+                        if (target_x >= 0 && target_x < width)
+                        {
+                            //this finnal sets a value to '#'
+                            grid[current_y][target_x] = '#'; 
+                        }
+                    }
+                }
                 
+            }
+        }
+
+        //this will add one pillar in a random 
+        //spot in the level as a kind of cliff
+        void add_random_pillar()
+        {
+            int pillar_width = 2;
+
+            int pillar_height = 5;
+
+            //this is used to calculate how far away the pillar has to be from the edge of the level
+            int pillar_buffer_left = 3;
+            int pillar_buffer_right = 3;
+            //picks a random x chord 
+            int pillar_x = pillar_buffer_left + (rand() % (width - (pillar_buffer_left + pillar_buffer_right)));
+
+            for (int h = 0; h < pillar_height; h++)
+            {
+                //moves upward from the bottom row
+                int current_y = (height - 1) - h;
+
+                //this is only 3 wide -1 to the left -1 to the right
+                for (int z = -1; z <= 1; z++)
+                {   
+                    //find target x
+                    int target_x = pillar_x + z;
+
+                    if (target_x >= 0 && target_x < width)
+                    {
+                        grid[current_y][target_x] = 'V';
+                    }
+                }
             }
         }
 
@@ -80,27 +161,39 @@ class game_map
             //this fills the top layer with "~" for the surface
             for (int x = 0; x < width; x++)
             {
-                level_grid[0][x] = '~';
+                grid[0][x] = '~';
             }
 
             //add sea floor
             for (int x = 0; x < width; x++)
             {
-                level_grid[height - 1][x] = '#';
+                grid[height - 1][x] = '#';
             }
 
             //add hills
             add_random_hills();
+            add_random_pillar();
 
         }
 
-}
+};
+
 
 
 
 int main ()
 {
 
-    cout << "TEST";
+    srand(time(0));
+
+    game_map ocean_map(50,12);
+
+    cout << "TEST\n\n";
+
+    ocean_map.print_map();
+
+
+
+
 
 }
