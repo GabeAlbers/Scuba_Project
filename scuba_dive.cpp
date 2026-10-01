@@ -13,6 +13,43 @@
 using namespace std;
 
 //i need this so subarine knows game map exists
+class game_map;
+
+class submarine
+{
+
+    public:
+        int x;
+        int y;
+        int max_oxygen;
+        int current_oxygen;
+        int total_earnings;
+
+
+        //this constructor sets the initial position and filles the oxygen to the level it needs to be
+        submarine(int start_x, int start_y, int oxygen)
+        {
+            x = start_x;
+            y = start_y;
+            max_oxygen = oxygen;
+            current_oxygen = oxygen;
+            total_earnings = 0;
+        }
+
+        //this can later be used to reset the sumarine starting and ending values
+        void reset(int start_x, int start_y)
+        {
+            x = start_x;
+            y = start_y;
+            current_oxygen = max_oxygen;
+        }
+
+        //tis will check player movment aginst map collisions on map
+        void player_input(char input, const game_map& map);
+
+
+};
+
 class game_map
 {
     private:
@@ -45,16 +82,16 @@ class game_map
             }
         }
 
-        void print_map_with_sub(const subarine& sub)
+        void print_map_with_sub(const submarine& sub)
         {
-            for (int y = 0; y < height: y++)
+            for (int y = 0; y < height; y++)
             {
-                for (int x = 0: x < width; x++)
+                for (int x = 0; x < width; x++)
                 {   
                     //if the chord matches the sub chord print '@'
                     if (x == sub.x && y == sub.y)
                     {
-                        cout << '@'
+                        cout << '@';
                     }
                     else 
                     {
@@ -285,59 +322,28 @@ class game_map
 
 };
 
-class submarine
+//this needs to be declared after the game_map class
+void submarine::player_input(char input, const game_map& map)
 {
 
-    public:
-        int x;
-        int y;
-        int max_oxygen;
-        int current_oxygen;
-        int total_earnings;
+    int target_x = x;
+    int target_y = y;
 
+    //convert input to lower
+    input = tolower(input);
 
-        //this constructor sets the initial position and filles the oxygen to the level it needs to be
-        submarine(int start_x, int start_y, int oxygen)
-        {
-            x = start_x;
-            y = start_y;
-            max_oxygen = oxygen;
-            current_oxygen = oxygen;
-            total_earnings = 0;
-        }
+    if (input == 'w') target_y--; //move up (subtract because it prints 0 -> max)
+    else if (input == 's') target_y++; //down
+    else if (input == 'a') target_x--; //left 
+    else if (input == 'd') target_x++; //right
 
-        //this can later be used to reset the sumarine starting and ending values
-        void reset(int start_x, int start_y)
-        {
-            x = start_x;
-            y = start_y;
-            current_oxygen = max_oxygen;
-        }
-
-        //tis will check player movment aginst map collisions on map
-        void player_input(char input, const game_map& map)
-        {
-
-            int target_x = x;
-            int target_y = y;
-
-            //convert input to lower
-            input = tolower(input);
-
-            if (input == 'w') target_y--; //move up (subtract because it prints 0 -> max)
-            else if (input == 's') target_y++; //down
-            else if (input == 'a') target_x--; //left 
-            else if (input == 'd') target_x++; //right
-
-            //if the map says its valid do it
-            if (map.is_valid_move(target_x, target_y))
-            {
-                x = target_x;
-                y = target_y;
-            }
-        }
-
-};
+    //if the map says its valid do it
+    if (map.is_valid_move(target_x, target_y))
+    {
+        x = target_x;
+        y = target_y;
+    }
+}
 
 
 
@@ -351,6 +357,28 @@ int main ()
     srand(time(0));
 
     game_map ocean_map(50,12);
+    submarine my_sub(5, 2, 100); //collumn 5 row 2 with 100 oxygen
+
+    char input = ' ';
+
+    while (input != 'q')
+    {
+        cout << "==================================================" 
+             << endl
+             << "==================================================" 
+             << endl;
+        ocean_map.print_map_with_sub(my_sub);
+        cout << "controls: w a s d, q = quit" << endl;
+        cout << "enter move: "; 
+
+        cin >> input;
+
+        if (input != 'q')
+        {
+            my_sub.player_input(input, ocean_map);
+        }
+
+    }
 
     cout << "TEST\n\n";
 
