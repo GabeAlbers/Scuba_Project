@@ -45,6 +45,26 @@ class game_map
             }
         }
 
+        void print_map_with_sub(const subarine& sub)
+        {
+            for (int y = 0; y < height: y++)
+            {
+                for (int x = 0: x < width; x++)
+                {   
+                    //if the chord matches the sub chord print '@'
+                    if (x == sub.x && y == sub.y)
+                    {
+                        cout << '@'
+                    }
+                    else 
+                    {
+                        cout << grid[y][x];
+                    }
+                }
+                cout << endl;
+            }
+        }
+
         char get_tile(int x, int y)
         {
             return grid[y][x];
