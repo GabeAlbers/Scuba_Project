@@ -12,41 +12,7 @@
 
 using namespace std;
 
-class submarine
-{
-
-    public:
-        int x;
-        int y;
-        int max_oxygen;
-        int current_oxygen;
-        int total_earnings;
-
-
-        //this constructor sets the initial position and filles the oxygen to the level it needs to be
-        submarine(int start_x, int start_y, int oxygen)
-        {
-            x = start_x;
-            y = start_y;
-            max_oxygen = oxygen;
-            current_oxygen = oxygen;
-            total_earnings = 0;
-        }
-
-        //this can later be used to reset the sumarine starting and ending values
-        void reset(int start_x, int start_y)
-        {
-            x = start_x;
-            y = start_y;
-            current_oxygen = max_oxygen;
-        }
-
-        //tis will check player movment aginst map collisions on map
-        void player_input()
-
-};
-
-
+//i need this so subarine knows game map exists
 class game_map
 {
     private:
@@ -136,7 +102,7 @@ class game_map
             int pillar_height = 5;
 
             //this is used to calculate how far away the pillar has to be from the edge of the level
-            int pillar_buffer_left = 7;
+            int pillar_buffer_left = 12;
             int pillar_buffer_right = 3;
             //picks a random x chord 
             int pillar_x = pillar_buffer_left + (rand() % (width - (pillar_buffer_left + pillar_buffer_right)));
@@ -281,7 +247,7 @@ class game_map
             add_treasures(10);
         }
 
-        bool is_valid_move(int target_x, int target_y)
+        bool is_valid_move(int target_x, int target_y) const
         {
 
             //check boundries
@@ -290,7 +256,7 @@ class game_map
                 return false;
             } else if (grid[target_y][target_x] == '#') //check walls or seafloors
             {
-                return false 
+                return false;
             }
 
             //otherwise its true
@@ -298,6 +264,63 @@ class game_map
         }
 
 };
+
+class submarine
+{
+
+    public:
+        int x;
+        int y;
+        int max_oxygen;
+        int current_oxygen;
+        int total_earnings;
+
+
+        //this constructor sets the initial position and filles the oxygen to the level it needs to be
+        submarine(int start_x, int start_y, int oxygen)
+        {
+            x = start_x;
+            y = start_y;
+            max_oxygen = oxygen;
+            current_oxygen = oxygen;
+            total_earnings = 0;
+        }
+
+        //this can later be used to reset the sumarine starting and ending values
+        void reset(int start_x, int start_y)
+        {
+            x = start_x;
+            y = start_y;
+            current_oxygen = max_oxygen;
+        }
+
+        //tis will check player movment aginst map collisions on map
+        void player_input(char input, const game_map& map)
+        {
+
+            int target_x = x;
+            int target_y = y;
+
+            //convert input to lower
+            input = tolower(input);
+
+            if (input == 'w') target_y--; //move up (subtract because it prints 0 -> max)
+            else if (input == 's') target_y++; //down
+            else if (input == 'a') target_x--; //left 
+            else if (input == 'd') target_x++; //right
+
+            //if the map says its valid do it
+            if (map.is_valid_move(target_x, target_y))
+            {
+                x = target_x;
+                y = target_y;
+            }
+        }
+
+};
+
+
+
 
 
 
