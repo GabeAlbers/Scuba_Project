@@ -30,6 +30,8 @@ class submarine
         int oxygen_pockets_found = 0;
         int fish_descovered_count = 0;
 
+        string last_message = "Dive started. Look for ? blocks and use I to inspect ones to the left right ablove or below you";
+
 
         //this constructor sets the initial position and filles the oxygen to the level it needs to be
         submarine(int start_x, int start_y, int oxygen)
@@ -338,7 +340,7 @@ class game_map
                 if (roll <= 25 )
                 {
                     tile_content = '2';
-                    cout << "\nYou find... A FISH! thats a pretty cool looking fish!" << endl;
+                    sub.last_message = "You find... A FISH! thats a pretty cool looking fish!";
                     sub.fish_descovered_count++;
                 }
                 else //75% chance or this
@@ -349,14 +351,14 @@ class game_map
                     if (loot_type == 1)
                     {
                         int reward = 150;
-                        cout << "\nThats a nice gold coin! Gained $" << reward << "!" << endl;
+                        sub.last_message = "Thats a nice gold coin! Gained $150";
                         sub.gold_coins_found++;
                         sub.total_earnings += reward;
                     } 
                     else if (loot_type == 2)
                     {
                         int reward = 300;
-                        cout << "\n  Ancient Relic!! Nice! Gained $" << reward << endl;
+                        sub.last_message = "Ancient Relic!! Nice! Gained $300";
                         sub.relics_found++;
                         sub.total_earnings += reward;
 
@@ -364,7 +366,7 @@ class game_map
                     {
                         sub.oxygen_pockets_found++;
                         sub.current_oxygen = 100;
-                        cout << "\nYou found an air pocket! oxygen had been restored up to 100!" << endl;
+                        sub.last_message = "You found an air pocket! oxygen had been restored up to 100!";
                     }
                 }
             } 
@@ -373,11 +375,11 @@ class game_map
                 int roll = 1 + (rand() % 100);
                 if (roll <= 99)
                 {
-                cout << "\nYou look at it again.. umm... its still a fish." << endl;
+                sub.last_message = "You look at it again.. umm... its still a fish.";
                 }else 
                 {
                     int reward = 150;
-                    cout << "\nWhat?! the fish turned into a gold coin! Gained $" << reward << "!" << endl;
+                    sub.last_message = "What?! the fish turned into a gold coin! Gained $150!!!";
                     sub.gold_coins_found++;
                     sub.total_earnings += reward;
                     tile_content = ' ';
@@ -490,12 +492,23 @@ void submarine::player_input(char input, const game_map& map)
     else if (input == 's') target_y++; //down
     else if (input == 'a') target_x--; //left 
     else if (input == 'd') target_x++; //right
+    else 
+    {
+        last_message = "Invalid Move! Use (W/A/S/D) to move or I to inspect.";
+        return;
+    }
 
     //if the map says its valid do it
     if (map.is_valid_move(target_x, target_y))
     {
         x = target_x;
         y = target_y;
+
+        if (current_oxygen > 0)
+        {
+            current_oxygen--;
+            current_oxygen--;
+        }
     }
 }
 
@@ -517,8 +530,11 @@ int main ()
 
     while (input != 'q')
     {
-        cout << "==================================================" << endl
-             << "Status: " << endl;
+        cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" //this is probobly not the most effiecent way but it kinda clears the screen lol
+             << "==================================================" << endl
+             << "Status: " << my_sub.last_message << endl
+             << "Oxygen: " << my_sub.current_oxygen << "/" << my_sub.max_oxygen << endl
+             << "Earnings so far: $" << my_sub.total_earnings << endl
              << "==================================================" 
              << endl;
         ocean_map.print_map_with_sub(my_sub);
@@ -560,10 +576,6 @@ int main ()
         }
 
     }
-
-    cout << "TEST\n\n";
-
-    ocean_map.print_map();
 
 
 
