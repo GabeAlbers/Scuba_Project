@@ -80,8 +80,64 @@ class game_map
 
 
         }
+        
+        void print_camera(const submarine& sub)
+        {
+            int view_size = 5;
+            int half_size = view_size / 2;
 
-        //simple printer for testing
+            int start_x = sub.x - half_size;
+            int end_x = sub.x +half_size;
+            int start_y = sub.y - half_size;
+            int end_y = sub.y + half_size;
+
+            //this is sued to clamp the camera when we 
+            // reach a boundery horizontaly
+            if (start_x < 0)
+            {
+                end_x += (-start_x);
+                start_x = 0;
+            }
+            if (end_x >= width)
+            {
+                int diffrance = end_x - (width - 1);
+                start_x -= diffrance;
+                end_x = width - 1;
+            }
+
+            //render this 5x5 camera 
+            for (int y = start_y; y<= end_y; y++)
+            {
+                for (int x = start_x; x <= end_x; x++)
+                {
+
+                    //when y is less than 0 we are above the water so im going to print out ' '
+                    if (y < 0)
+                    {
+                        if (x == sub.x && y == sub.y)
+                        {
+                            cout << '@';
+                        } else 
+                        {
+                            cout << ' '; //this is actually the thing that printing the sky
+                        }
+                    }
+                    else if (y >=  height)
+                    {
+                        cout << '#'; //at the bottom this will just print out solid ocean floor
+                    } else if (x == sub.x && y == sub.y)
+                    {
+                        cout << '@';
+                    } else
+                    {
+                        cout << grid[y][x];
+                    }
+                }
+                cout << endl; //i need to start the next row
+            }
+        }
+
+        //simple printer for testing the whole map
         void print_map() 
         {
             for (int y = 0; y < height; y++)
@@ -513,16 +569,8 @@ void submarine::player_input(char input, const game_map& map)
 }
 
 
-
-
-
-
-
-int main ()
+void run_game(bool use_camera)
 {
-
-    srand(time(0));
-
     game_map ocean_map(50,12);
     submarine my_sub(5, 2, 100); //collumn 5 row 2 with 100 oxygen
 
@@ -537,11 +585,22 @@ int main ()
              << "Earnings so far: $" << my_sub.total_earnings << endl
              << "==================================================" 
              << endl;
-        ocean_map.print_map_with_sub(my_sub);
+
+             if (use_camera)//this take the input and either shows the player the cam version or the full map version
+             {
+                ocean_map.print_camera(my_sub);
+             }
+             else 
+             {
+                ocean_map.print_map_with_sub(my_sub);
+             }
+  
         cout << "controls: movment (w/a/s/d) up, left, down, and right | i (inspect) | q = quit" << endl;
         cout << "enter move: "; 
 
         cin >> input;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         if (input == 'i')
         {
@@ -576,6 +635,22 @@ int main ()
         }
 
     }
+}
+
+
+
+
+
+
+
+int main ()
+{
+
+    srand(time(0));
+
+    
+
+
 
 
 
