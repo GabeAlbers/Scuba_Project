@@ -602,6 +602,17 @@ void run_game(bool use_camera)
 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+        if (my_sub.current_oxygen <= 0)
+        {
+            cout << "\n\n\n"
+                 << "==================================================" << endl
+                 << "           OUT OF OXYGEN - MISSION FAILED"          << endl
+                 << "                SENT TO MAIN MENU"                  << endl
+                 << "==================================================" << endl;
+            break;
+
+        }
+
         if (input == 'i')
         {
             ocean_map.inspect_menu(my_sub);
@@ -648,12 +659,48 @@ int main ()
 
     srand(time(0));
 
-    
+    int choice = 0;
 
+    while (choice != 3)
+    {
+        cout << "======================================" << endl
+             << "Submarine Adventure Game!" << endl
+             << "======================================" << endl
+             << "Options" << endl
+             << "1) Developer Game Mode (Full Map View)" << endl
+             << "2) Classic Mode (5x5 Camera View)" << endl
+             << "3) Quit Game" << endl
+             << "--------------------------------------" << endl
+             << "Enter a valid input (1-3): ";
 
+             cin >> choice;
 
+             if (cin.fail())
+             {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << endl << "Invalid input please enter a number between 1 and 3." << endl; 
+                continue;
+             }
 
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); //just to flush out any other inputs leftover 
 
-
+            if (choice == 1)
+            {
+                cout << "\nStarting Developer Mode..." << endl;
+                run_game(false);
+            } else if (choice == 2)
+            {
+                cout << "\nStarting Camera Mode..." <<endl;
+                run_game(true);
+            } else if (choice == 3)
+            {
+                cout << "\nExiting Program. Fairwell capmn'";
+                return 0;
+            } else 
+            {
+                cout << "\nInvalid Inpit!. Please select 1, 2, or 3." << endl;
+            }
+    } 
 
 }
