@@ -425,6 +425,11 @@ class game_map
                 //input time
                 cin >> choice;
 
+                cout << "=====================================================" 
+                     << endl
+                     << "=====================================================" 
+                     << endl;
+
                 if (cin.fail())
                 {
                     cin.clear();
@@ -512,8 +517,8 @@ int main ()
 
     while (input != 'q')
     {
-        cout << "==================================================" 
-             << endl
+        cout << "==================================================" << endl
+             << "Status: " << endl;
              << "==================================================" 
              << endl;
         ocean_map.print_map_with_sub(my_sub);
@@ -528,7 +533,30 @@ int main ()
         }
         else if (input != 'q')
         {
+
             my_sub.player_input(input, ocean_map);
+
+            //if the su is at the surface then this happens
+            if (my_sub.y == 0  || ocean_map.get_tile(my_sub.x, my_sub.y) == '~')
+            {
+                int gold_total = my_sub.gold_coins_found * 150;
+                int relic_total = my_sub.relics_found * 300;
+
+                cout << "\n==================================================" << endl
+                     << "            Succsessfull Surface!                " << endl
+                     << "Surface air has been reached and your oxygen has been refilled!" << endl
+                     << "----------------------------------------------------" << endl
+                     << "                   Rewards                          " << endl
+                     << "Gold Coins Found     :" << my_sub.gold_coins_found << " x 150 = $" << gold_total << endl
+                     << "Relics found         :" << my_sub.relics_found << " x 300 = $" << relic_total << endl
+                     << "Air pockets decovered:" << my_sub.oxygen_pockets_found << endl
+                     << "Fish seen            :" << my_sub.fish_descovered_count << endl
+                     << "==================================================" << endl
+                     << "Total Earnings : $" << my_sub.total_earnings << endl
+                     << "==================================================" << endl;
+
+                    break;
+            }
         }
 
     }
